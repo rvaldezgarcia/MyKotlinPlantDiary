@@ -102,11 +102,8 @@ Examples
 1.1  
 
 **Given** a feed of plant data is available  
-
 **Given** GPS details are available  
-
 **When**  
-
 - Select the plant Asimina triloba
 - Add notes: “planted by Brandan Jones”
 
@@ -115,13 +112,35 @@ Examples
 2.1  
 
 **Given** a feed of plant data is available  
-
 **Given** GPS details are available  
-
 **When**  
-
 - Select the plant Malus domestica ‘Fuji’
 - Take a photo of a Fuji apple seedling  
 
 **Then** when I navigate to the Specimen History view, I should see at least one Malus domestica ‘Fuji’ specimen with the a photo of a Fuji apple seedling.
 
+## Class Diagram  
+
+![kotlinplantdiary drawio](https://user-images.githubusercontent.com/10903407/199129311-ec4e5be7-3dcf-46d4-9978-c1e9bc6c5c18.png)  
+
+### Class Diagram Description
+
+**MainActivity**: The first screen the user sees. This will have a list of specimens, and an option to enter a new specimen.
+
+**SpecimenDetailsActivity**: A screen that shows details of a specimen.
+
+**RetrofitInstance**: Boostrap class required for Retrofit.
+
+**Plant**: Noun class that represents a plant.
+
+**Specimen**: Noun class that represents a specimen.
+
+**IPlantDAO**: Interface for Retrofit to find and parse Plant JSON.
+
+**ISpecimenDAO**: Interface for Room to persist Specimen data  
+
+## Scrum Roles  
+
+- DevOps/Product Owner/Scrum Master: Brandan Jones
+- Frontend Developer: Brandan Jones
+- Integration Developer: Brandan Jones
