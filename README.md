@@ -27,26 +27,29 @@ Use your own Android device to create your own plant diary. Take photos with the
 
 ### Requirement 100.0: Search for Plants  
 
-Scenario
+#### Scenario  
 
-As a user interested in plants, I want to be able to search plants based on any part of the name: genus, species, cultivar, or common name.
-Dependencies
+As a user interested in plants, I want to be able to search plants based on any part of the name: genus, species, cultivar, or common name.  
 
-Plant search data are available and accessible.
-Assumptions
+#### Dependencies  
+
+Plant search data are available and accessible.  
+
+#### Assumptions  
 
 Scientific names are stated in Latin.
 
 Common names are stated in English.
-Examples
+
+#### Examples  
 
 1.1
 
-Given a feed of plant data is available
+**Given** a feed of plant data is available
 
-When I search for “Redbud”
+**When** I search for “Redbud”
 
-Then I should receive at least one result with these attributes:
+**Then** I should receive at least one result with these attributes:
 
 Genus: Cercis
 
@@ -55,11 +58,12 @@ Species: canadensis
 Common: Eastern Redbud
 
 1.2
-Given a feed of plant data is available
 
-When I search for “Quercus”
+**Given** a feed of plant data is available
 
-Then I should receive at least one result with these attributes:
+**When** I search for “Quercus”
+
+**Then** I should receive at least one result with these attributes:
 
 Genus: Quercus
 Species: robur
