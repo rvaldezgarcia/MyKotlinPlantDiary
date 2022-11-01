@@ -67,7 +67,8 @@ Common: Eastern Redbud
 
 Genus: Quercus
 Species: robur
-Common: English Oak
+Common: English Oak  
+
 And I should receive at least one result with these attributes:
 Genus: Quercus
 Species: alba
