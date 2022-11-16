@@ -1,5 +1,6 @@
 package net.globalpc.myplantdiary
 
+import net.globalpc.myplantdiary.dto.Plant
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -29,5 +30,11 @@ class ExampleUnitTest {
 
     fun addFiveAndThree_equalsEight() {
         assertEquals( 8, 4+4 )
+    }
+
+    @Test
+    fun confirmEasternRedbud_outputsEasternRedbud () {
+        var plant: Plant = Plant("Cercis", "canadesis", "Eastern Redbud")
+        assertEquals( "Eastern Redbud",  plant.toString() );
     }
 }
