@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/take_photo"
-            android:src="@drawable/ic_photo" />
+            android:src="@drawable/photo" />
 
         <ImageButton
             android:id="@+id/btnSave"
@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/save_data"
-            android:src="@drawable/ic_save" />
+            android:src="@drawable/save" />
 
         <ImageButton
             android:id="@+id/btnLogon"
@@ -120,7 +120,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/logon_option"
-            android:src="@drawable/ic_logon" />
+            android:src="@drawable/logon" />
     </LinearLayout>
 
     <ImageView
