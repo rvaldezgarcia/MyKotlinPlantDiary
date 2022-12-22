@@ -54,8 +54,8 @@ class PlantDataUnitTests {
         // Create and add plants to our collection.
         var redbud = Plant( "Cercis", "canadensis", "Eastern Redbud")
         allPlants.add(redbud)
-        var redOak = Plant("Quercus", "rubra", "Red Oak")
-        allPlants.add(redOak)
+        // var redOak = Plant("Quercus", "rubra", "Red Oak")
+        // allPlants.add(redOak)
         var whiteOak = Plant("Quercus", "alba", "White Oak")
         allPlants.add(whiteOak)
         var englishOak = Plant("Quercus", "alba", "English Oak")
@@ -63,9 +63,12 @@ class PlantDataUnitTests {
         allPlantsLiveData.postValue(allPlants)
 
         every {
-            plantService.fetchPlants( any<String>() )
-            // plantService.fetchPlants( "sklujapouetllkjsdau" )
+            plantService.fetchPlants( or( "Redbud","Quercus" ) ) // plantService.fetchPlants( any<String>() ) // plantService.fetchPlants( "sklujapouetllkjsdau" )
         } returns allPlantsLiveData
+
+        every {
+            plantService.fetchPlants( not( or( "Redbud","Quercus" ) ) ) // plantService.fetchPlants( any<String>() ) // plantService.fetchPlants( "sklujapouetllkjsdau" )
+        } returns MutableLiveData<ArrayList<Plant>>()
 
         mvm.plantService = plantService
     }
