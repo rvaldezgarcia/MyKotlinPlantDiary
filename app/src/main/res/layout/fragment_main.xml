@@ -102,21 +102,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_photo" />
+            android:src="@drawable/ic_photo"
+            android:contentDescription="@string/take_photo" />
 
         <ImageButton
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_save" />
+            android:src="@drawable/ic_save"
+            android:contentDescription="@string/save_data" />
 
         <ImageButton
             android:id="@+id/btnLogon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_logon" />
+            android:src="@drawable/ic_logon"
+            android:contentDescription="@string/logon_option" />
     </LinearLayout>
 
     <ImageView

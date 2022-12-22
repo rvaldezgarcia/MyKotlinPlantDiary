@@ -6,4 +6,7 @@
     <string name="plantName">Plant Name</string>
     <string name="description">Description</string>
     <string name="datePlanted">Date Planted</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="save_data">Save Data</string>
+    <string name="logon_option">Logon option</string>
 </resources>
