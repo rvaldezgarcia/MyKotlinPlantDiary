@@ -29,7 +29,7 @@ class PlantDataUnitTests {
 
     @Test
     fun confirmEasternRedbud_outputsEasternRedbud () {
-        var plant: Plant = Plant("Cercis", "canadesis", "Eastern Redbud")
+        var plant: Plant = Plant("Cercis", "canadensis", "Eastern Redbud")
         assertEquals( "Eastern Redbud",  plant.toString() );
     }
 
@@ -52,22 +52,19 @@ class PlantDataUnitTests {
         var allPlants = ArrayList<Plant>()
 
         // Create and add plants to our collection.
-        var redbud = Plant( "Cercis", "canadensis", "Easter Redbud")
+        var redbud = Plant( "Cercis", "canadensis", "Eastern Redbud")
         allPlants.add(redbud)
-
         var redOak = Plant("Quercus", "rubra", "Red Oak")
         allPlants.add(redOak)
-
         var whiteOak = Plant("Quercus", "alba", "White Oak")
         allPlants.add(whiteOak)
-
-        // var englishOak = Plant("Quercus", "alba", "English Oak")
-        // allPlants.add(englishOak)
-
+        var englishOak = Plant("Quercus", "alba", "English Oak")
+        allPlants.add(englishOak)
         allPlantsLiveData.postValue(allPlants)
 
         every {
             plantService.fetchPlants( any<String>() )
+            // plantService.fetchPlants( "sklujapouetllkjsdau" )
         } returns allPlantsLiveData
 
         mvm.plantService = plantService
@@ -86,7 +83,7 @@ class PlantDataUnitTests {
             assertNotNull(it)
             assertTrue( it.size > 0 )
             it.forEach {
-                if( it.genus == "Cercis" && it.species == "canadesis" && it.common.contains("Eastern Redbud") ) {
+                if( it.genus == "Cercis" && it.species == "canadensis" && it.common.contains("Eastern Redbud") ) {
                     redbudFound = true
                 }
             }
@@ -117,7 +114,7 @@ class PlantDataUnitTests {
             assertNotNull(it)
             assertTrue( it.size > 0 )
             it.forEach {
-                if( it.genus == "Quercus" && it.species == "robur" && it.common.contains("White Oak") ) {
+                if( it.genus == "Quercus" && it.species == "alba" && it.common.contains("White Oak") ) {
                     whiteOakFound = true
                 }
             }

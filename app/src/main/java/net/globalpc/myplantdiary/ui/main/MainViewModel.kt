@@ -8,7 +8,6 @@ import net.globalpc.myplantdiary.service.PlantService
 class MainViewModel : ViewModel() {
 
     var plants: MutableLiveData<ArrayList<Plant>> = MutableLiveData<ArrayList<Plant>>()
-
     var plantService : PlantService = PlantService()
 
     fun fetchPlants(plantName: String) {
