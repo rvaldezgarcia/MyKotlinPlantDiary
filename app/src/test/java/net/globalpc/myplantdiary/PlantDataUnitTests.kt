@@ -2,8 +2,10 @@ package net.globalpc.myplantdiary
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import net.globalpc.myplantdiary.dto.Plant
 import net.globalpc.myplantdiary.service.PlantService
 import net.globalpc.myplantdiary.ui.main.MainViewModel
@@ -39,6 +41,19 @@ class PlantDataUnitTests {
         givenAFeedOfMockedPlantDataAreAvailable()
         whenSearchForRedbud()
         thenResultContainsEasternRedbud()
+
+        thenVerifyFunctionsInvoked()
+    }
+
+    private fun thenVerifyFunctionsInvoked() {
+        verify {
+            plantService.fetchPlants("Redbud")
+        }
+
+        verify(exactly = 0) {
+            plantService.fetchPlants("Maple")
+        }
+        confirmVerified(plantService)
     }
 
     private fun givenAFeedOfMockedPlantDataAreAvailable() {
@@ -67,7 +82,7 @@ class PlantDataUnitTests {
         } returns allPlantsLiveData
 
         every {
-            plantService.fetchPlants( not( or( "Redbud","Quercus" ) ) ) // plantService.fetchPlants( any<String>() ) // plantService.fetchPlants( "sklujapouetllkjsdau" )
+            plantService.fetchPlants( not( or( "Redbud","Quercus" ) ) )
         } returns MutableLiveData<ArrayList<Plant>>()
 
         mvm.plantService = plantService
