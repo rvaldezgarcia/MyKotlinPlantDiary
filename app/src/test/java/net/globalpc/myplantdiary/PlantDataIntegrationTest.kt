@@ -20,14 +20,14 @@ import org.junit.rules.TestRule
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class PlantDataUnitTests {
+class PlantDataIntegrationTest {
 
     @get:Rule
     var rule : TestRule = InstantTaskExecutorRule()
 
     lateinit var mvm : MainViewModel
-    
-    var plantService = mockk<PlantService>()
+
+    // var plantService = mockk<PlantService>()
 
     @Test
     fun confirmEasternRedbud_outputsEasternRedbud () {
@@ -38,54 +38,13 @@ class PlantDataUnitTests {
     @Test
     fun searchForRedbud_returnsRedbud() {
 
-        givenAFeedOfMockedPlantDataAreAvailable()
+        givenAFeedOfPlantDataAreAvailable()
         whenSearchForRedbud()
         thenResultContainsEasternRedbud()
-
-        thenVerifyFunctionsInvoked()
     }
 
-    private fun thenVerifyFunctionsInvoked() {
-        verify {
-            plantService.fetchPlants("Redbud")
-        }
-
-        verify(exactly = 0) {
-            plantService.fetchPlants("Maple")
-        }
-        confirmVerified(plantService)
-    }
-
-    private fun givenAFeedOfMockedPlantDataAreAvailable() {
+    private fun givenAFeedOfPlantDataAreAvailable() {
         mvm = MainViewModel()
-        createMockData()
-    }
-
-    private fun createMockData() {
-
-        var allPlantsLiveData = MutableLiveData<ArrayList<Plant>>()
-        var allPlants = ArrayList<Plant>()
-
-        // Create and add plants to our collection.
-        var redbud = Plant( "Cercis", "canadensis", "Eastern Redbud")
-        allPlants.add(redbud)
-        // var redOak = Plant("Quercus", "rubra", "Red Oak")
-        // allPlants.add(redOak)
-        var whiteOak = Plant("Quercus", "alba", "White Oak")
-        allPlants.add(whiteOak)
-        var englishOak = Plant("Quercus", "alba", "English Oak")
-        allPlants.add(englishOak)
-        allPlantsLiveData.postValue(allPlants)
-
-        every {
-            plantService.fetchPlants( or( "Redbud","Quercus" ) ) // plantService.fetchPlants( any<String>() ) // plantService.fetchPlants( "sklujapouetllkjsdau" )
-        } returns allPlantsLiveData
-
-        every {
-            plantService.fetchPlants( not( or( "Redbud","Quercus" ) ) )
-        } returns MutableLiveData<ArrayList<Plant>>()
-
-        mvm.plantService = plantService
     }
 
     private fun whenSearchForRedbud() {
@@ -105,15 +64,15 @@ class PlantDataUnitTests {
                     redbudFound = true
                 }
             }
-        }
 
-        assertTrue(redbudFound)
+            assertTrue(redbudFound)
+        }
     }
 
     @Test
     fun searchForQuercus_returnsEnglishOakAndWhiteOak() {
 
-        givenAFeedOfMockedPlantDataAreAvailable()
+        givenAFeedOfPlantDataAreAvailable()
         whenSearchForQuercus()
         thenResultContainsEnglishOak()
         thenResultContainsWhiteOak()
@@ -136,9 +95,9 @@ class PlantDataUnitTests {
                     whiteOakFound = true
                 }
             }
-        }
 
-        assertTrue(whiteOakFound)
+            assertTrue(whiteOakFound)
+        }
     }
 
     private fun thenResultContainsEnglishOak() {
@@ -154,15 +113,15 @@ class PlantDataUnitTests {
                     englishOakFound = true
                 }
             }
-        }
 
-        assertTrue(englishOakFound)
+            assertTrue(englishOakFound)
+        }
     }
 
     @Test
     fun searchForGarbage_returnsNothing() {
 
-        givenAFeedOfMockedPlantDataAreAvailable()
+        givenAFeedOfPlantDataAreAvailable()
         whenISearchForGarbage()
         thenIGetZeroResults()
     }
