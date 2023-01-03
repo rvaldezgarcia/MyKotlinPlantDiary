@@ -13,6 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 // import kotlinx.android.synthetic.main.fragment_main.*
@@ -25,7 +28,7 @@ import java.util.jar.Manifest
 class MainFragment : Fragment() {
 
     private val CAMERA_REQUEST_CODE: Int = 1998
-    val CAMERA_PERMISSION_REQUEST_CODE : Int = 1997
+    val CAMERA_PERMISSION_REQUEST_CODE: Int = 1997
 
     companion object {
         fun newInstance() = MainFragment()
@@ -34,6 +37,7 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
 
     private var _binding: FragmentMainBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -59,21 +63,107 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        viewModel.plants.observe(viewLifecycleOwner, Observer {
-            plants
-                ->
-            binding.actPlantName.setAdapter( ArrayAdapter( requireContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, plants  ) )
+        viewModel.plants.observe(viewLifecycleOwner, Observer { plants
+            ->
+            binding.actPlantName.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                    plants
+                )
+            )
         })
 
         binding.btnTakePhoto.setOnClickListener {
-            prepTakePhoto()
+            // prepTakePhoto()
+
+            getPhoto()
         }
     }
+
+    private fun getPhoto() {
+        activity?.let {
+
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                invokeCamera()
+            } else {
+                permReqLauncher.launch(android.Manifest.permission.CAMERA)
+            }
+        }
+    }
+
+    private val permReqLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+            if (permissionGranted) {
+                invokeCamera()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.camera_permission_denied),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+    private fun invokeCamera() {
+
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
+                takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
+            startActivityForResult( takePictureIntent, CAMERA_REQUEST_CODE )
+        }
+        }
+        // var i = 1 + 1
+    }
+
+    /* private fun takePhoto() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
+                takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
+            startActivityForResult( takePictureIntent, CAMERA_REQUEST_CODE )
+        }
+        }
+    } */
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if( resultCode == RESULT_OK ) {
+
+            if( requestCode == CAMERA_REQUEST_CODE ) {
+                // now we can get the thumbnail
+
+                val imageBitmap = data!!.extras!!.get("data") as Bitmap
+
+                binding.imgPlant.setImageBitmap(imageBitmap)
+            }
+        }
+
+    }
+
+    /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if( resultCode == RESULT_OK ) {
+
+            if( requestCode == CAMERA_REQUEST_CODE ) {
+                // now we can get the thumbnail
+
+                val imageBitmap = data!!.extras!!.get("data") as Bitmap
+
+                binding.imgPlant.setImageBitmap(imageBitmap)
+            }
+        }
+
+    } */
 
     /**
      * See if we have permission or not.
      */
-    private fun prepTakePhoto() {
+
+    /* private fun prepTakePhoto() {
         if( ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.CAMERA  )  == PackageManager.PERMISSION_GRANTED ) {
             takePhoto()
         }
@@ -126,5 +216,5 @@ class MainFragment : Fragment() {
             }
         }
 
-    }
+    } */
 }
