@@ -4,9 +4,12 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,16 +20,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 // import kotlinx.android.synthetic.main.fragment_main.*
+import android.content.ContentValues.TAG
 
 import net.globalpc.myplantdiary.R
 import net.globalpc.myplantdiary.databinding.FragmentMainBinding
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.jar.Manifest
 
 
 class MainFragment : Fragment() {
 
+    private var uri: Uri? = null
+    private lateinit var currentImagePath: String
     private val CAMERA_REQUEST_CODE: Int = 1998
     val CAMERA_PERMISSION_REQUEST_CODE: Int = 1997
 
@@ -111,12 +121,50 @@ class MainFragment : Fragment() {
 
     private fun invokeCamera() {
 
+        var i = 1 + 1
+
+        val file = createImageFile()
+
+        try {
+            uri = FileProvider.getUriForFile(requireContext(), "net.globalpc.myplantdiary.fileprovider", file)
+        }
+        catch ( e: Exception ) {
+            Log.e( TAG, "Error: ${e.message}")
+            var foo = e.message
+        }
+        // getCameraImage.launch(uri)
+        getCameraImage.launch( null )
+
+        /*
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
                 takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
             startActivityForResult( takePictureIntent, CAMERA_REQUEST_CODE )
         }
+        } */
+    }
+
+    private val getCameraImage = registerForActivityResult( ActivityResultContracts.TakePicturePreview() ) {
+        bitmap -> if( bitmap != null ) {
+            // Log.i(TAG,"Image Location: $uri")
+            Log.i(TAG,"Image Location: $uri")
+
+            // val imageBitmap = data!!.extras!!.get("data") as Bitmap
+
+            binding.imgPlant.setImageBitmap(bitmap)
         }
-        // var i = 1 + 1
+        else {
+            // Log.e(TAG,"Image not saved. $uri")
+            Log.e(TAG,"Image not saved.")
+        }
+    }
+
+    private fun createImageFile() : File {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+        return File.createTempFile( "Speciment_${timestamp}", ".jpg", imageDirectory ).apply {
+           currentImagePath = this.absolutePath
+        }
     }
 
     /* private fun takePhoto() {
