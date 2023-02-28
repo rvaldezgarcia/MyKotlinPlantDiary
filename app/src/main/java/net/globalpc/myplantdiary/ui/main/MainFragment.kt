@@ -1,6 +1,7 @@
 package net.globalpc.myplantdiary.ui.main
 
 import android.app.Activity.RESULT_OK
+import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -24,6 +25,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 // import kotlinx.android.synthetic.main.fragment_main.*
 import android.content.ContentValues.TAG
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 
 import net.globalpc.myplantdiary.R
 import net.globalpc.myplantdiary.databinding.FragmentMainBinding
@@ -85,11 +87,61 @@ class MainFragment : Fragment() {
         })
 
         binding.btnTakePhoto.setOnClickListener {
-            // prepTakePhoto()
 
-            getPhoto()
+            // prepTakePhoto()
+            // getPhoto()
+            getCameraPicture();
         }
     }
+
+    private fun getCameraPicture() {
+
+        if( hasCameraPermission() === PERMISSION_GRANTED && hasExternalStoragePermission() == PERMISSION_GRANTED ) {
+
+            // The user has already granted permissions for these activities. Toggle the camera!
+            invokeTheCamera();
+        }
+        else {
+
+            // The user has not granted permissions, so we must request.
+            requestMultiplePermissionLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
+        }
+    }
+
+    private val requestMultiplePermissionLauncher = registerForActivityResult( ActivityResultContracts.RequestMultiplePermissions() ) {
+        resultsMap ->
+
+        var permissionGranted = false
+
+        resultsMap.forEach {
+            if( it.value == true ) {
+                permissionGranted = it.value
+            }
+            else {
+                permissionGranted = it.value;
+                return@forEach
+            }
+        }
+
+        if( permissionGranted ) {
+            invokeTheCamera()
+        }
+        else {
+            Toast.makeText( context, getString(R.string.cameraPermissionDenied), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private fun invokeTheCamera() {
+        var i = 1 + 1;
+    }
+
+    fun hasCameraPermission() = ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.CAMERA);
+    fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     private fun getPhoto() {
         activity?.let {
@@ -121,7 +173,7 @@ class MainFragment : Fragment() {
 
     private fun invokeCamera() {
 
-        var i = 1 + 1
+        // var i = 1 + 1
 
         val file = createImageFile()
 
@@ -132,6 +184,9 @@ class MainFragment : Fragment() {
             Log.e( TAG, "Error: ${e.message}")
             var foo = e.message
         }
+
+        // getCameraImageFile.launch( null )
+
         // getCameraImage.launch(uri)
         getCameraImage.launch( null )
 
@@ -140,6 +195,25 @@ class MainFragment : Fragment() {
                 takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
             startActivityForResult( takePictureIntent, CAMERA_REQUEST_CODE )
         }
+        } */
+    }
+
+    private val getCameraImageFile = registerForActivityResult( ActivityResultContracts.TakePicture() ) {
+
+        success ->
+
+
+
+        /* if( success != null && success == true ) {
+            // if we are here, we have a valid intent.
+            val photoFile : File = createImageFile()
+            photoFile?.also {
+                FileProvider.getUriForFile( context, "net.globalpc.myplanydiary.fileprovider", success  )
+            }
+        }
+        else {
+            Toast.makeText( context, "Unable to save photo.", Toast.LENGTH_LONG ).show()
+            Log.e(TAG,"Unable to save photo.")
         } */
     }
 
@@ -159,11 +233,19 @@ class MainFragment : Fragment() {
     }
 
     private fun createImageFile() : File {
+        // Generate a unique filename with date.
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
+        // Get access to the directory where we can write pictures.
         val imageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
-        return File.createTempFile( "Speciment_${timestamp}", ".jpg", imageDirectory ).apply {
-           currentImagePath = this.absolutePath
+        return File.createTempFile(
+            "Specimen_${timestamp}",
+            ".jpg",
+            imageDirectory
+        ).apply {
+
+            currentImagePath = this.absolutePath
         }
     }
 
