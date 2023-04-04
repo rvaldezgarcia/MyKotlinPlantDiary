@@ -88,9 +88,9 @@ class MainFragment : Fragment() {
 
         binding.btnTakePhoto.setOnClickListener {
 
-            // prepTakePhoto()
+            prepTakePhoto()
             // getPhoto()
-            getCameraPicture();
+            // getCameraPicture();
         }
     }
 
@@ -137,7 +137,43 @@ class MainFragment : Fragment() {
     }
 
     private fun invokeTheCamera() {
-        var i = 1 + 1;
+        // var i = 1 + 1;
+
+        val file = createImageFile()
+
+        try {
+            uri = context?.let { FileProvider.getUriForFile(it, "net.globalpc.myplantdiary.fileprovider", file) };
+        }
+        catch (e: Exception) {
+            Log.e(TAG, "Error: ${e.message}" );
+            var foo = e.message
+        }
+    }
+
+    private fun createImageFile(): File {
+
+        val timestamp = SimpleDateFormat( "yyyyMMdd_HHmmss" ).format( Date() );
+        val imageDir = activity?.getExternalFilesDir( Environment.DIRECTORY_PICTURES );
+
+        return File.createTempFile(
+            "Specimen_${timestamp}",
+            ".jpg",
+            imageDir
+        ).apply {  currentImagePath = absolutePath };
+
+        getTheCameraImageFile.launch(uri)
+    }
+
+    private val getTheCameraImageFile = registerForActivityResult( ActivityResultContracts.TakePicture() ) {
+        success ->
+
+            if( success ) {
+                Log.i( TAG, "Image Location: $uri" );
+                binding.imgPlant.setImageURI( uri );
+            }
+            else {
+                Log.e( TAG, "Image not saved. $uri" );
+            }
     }
 
     fun hasCameraPermission() = ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.CAMERA);
@@ -158,8 +194,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private val permReqLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+    private val permReqLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
             if (permissionGranted) {
                 invokeCamera()
             } else {
@@ -198,24 +233,24 @@ class MainFragment : Fragment() {
         } */
     }
 
+    /*
     private val getCameraImageFile = registerForActivityResult( ActivityResultContracts.TakePicture() ) {
 
         success ->
 
-
-
-        /* if( success != null && success == true ) {
+        // if( success != null && success == true ) {
             // if we are here, we have a valid intent.
-            val photoFile : File = createImageFile()
-            photoFile?.also {
-                FileProvider.getUriForFile( context, "net.globalpc.myplanydiary.fileprovider", success  )
-            }
-        }
-        else {
-            Toast.makeText( context, "Unable to save photo.", Toast.LENGTH_LONG ).show()
-            Log.e(TAG,"Unable to save photo.")
-        } */
+           // val photoFile : File = createImageFile()
+            //photoFile?.also {
+              //  FileProvider.getUriForFile( context, "net.globalpc.myplanydiary.fileprovider", success  )
+            // }
+        // }
+        // else {
+            // Toast.makeText( context, "Unable to save photo.", Toast.LENGTH_LONG ).show()
+            // Log.e(TAG,"Unable to save photo.")
+        // }
     }
+    */
 
     private val getCameraImage = registerForActivityResult( ActivityResultContracts.TakePicturePreview() ) {
         bitmap -> if( bitmap != null ) {
@@ -232,23 +267,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun createImageFile() : File {
-        // Generate a unique filename with date.
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-
-        // Get access to the directory where we can write pictures.
-        val imageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-
-        return File.createTempFile(
-            "Specimen_${timestamp}",
-            ".jpg",
-            imageDirectory
-        ).apply {
-
-            currentImagePath = this.absolutePath
-        }
-    }
-
     /* private fun takePhoto() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
                 takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
@@ -257,6 +275,7 @@ class MainFragment : Fragment() {
         }
     } */
 
+    /*
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -271,29 +290,13 @@ class MainFragment : Fragment() {
             }
         }
 
-    }
-
-    /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if( resultCode == RESULT_OK ) {
-
-            if( requestCode == CAMERA_REQUEST_CODE ) {
-                // now we can get the thumbnail
-
-                val imageBitmap = data!!.extras!!.get("data") as Bitmap
-
-                binding.imgPlant.setImageBitmap(imageBitmap)
-            }
-        }
-
-    } */
+    }*/
 
     /**
      * See if we have permission or not.
      */
 
-    /* private fun prepTakePhoto() {
+    private fun prepTakePhoto() {
         if( ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.CAMERA  )  == PackageManager.PERMISSION_GRANTED ) {
             takePhoto()
         }
@@ -314,16 +317,19 @@ class MainFragment : Fragment() {
         when( requestCode ) {
             CAMERA_PERMISSION_REQUEST_CODE -> {
                 if( grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+
+                    // Permission granted. Let's do stuff.
                     takePhoto()
                 }
                 else {
-                    Toast.makeText( requireContext(), "Unable to take photo without permission.", Toast.LENGTH_LONG )
+                    Toast.makeText( requireContext(), "Unable to take photo without permission.", Toast.LENGTH_LONG ).show();
                 }
             }
         }
     }
 
     private fun takePhoto() {
+
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
             takePictureIntent -> takePictureIntent.resolveActivity( requireContext().packageManager )?.also {
                 startActivityForResult( takePictureIntent, CAMERA_REQUEST_CODE )
@@ -332,12 +338,14 @@ class MainFragment : Fragment() {
     }
 
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if( resultCode == RESULT_OK ) {
 
             if( requestCode == CAMERA_REQUEST_CODE ) {
+
                 // now we can get the thumbnail
 
                 val imageBitmap = data!!.extras!!.get("data") as Bitmap
@@ -346,5 +354,5 @@ class MainFragment : Fragment() {
             }
         }
 
-    } */
+    }
 }
